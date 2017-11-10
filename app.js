@@ -1,15 +1,16 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+let express = require('express');
+let path = require('path');
+let favicon = require('serve-favicon');
+let logger = require('morgan');
+let cookieParser = require('cookie-parser');
+let bodyParser = require('body-parser');
 // 引入handlebars
-var hbs = require('hbs');
-var index = require('./routes/index');
-var users = require('./routes/users');
-var account = require('./routes/account');
-var app = express();
+let hbs = require('hbs');
+let index = require('./routes/index');
+let users = require('./routes/users');
+let account = require('./routes/account');
+let mongoose = require('mongoose');
+let app = express();
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
@@ -30,7 +31,7 @@ app.use('/users', users);
 app.use('/account', account);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    var err = new Error('Not Found');
+    let err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
@@ -45,5 +46,15 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error');
 });
+//调用mongodb数据库
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://localhost:27017/admin', { useMongoClient: true });
 
+let Cat = mongoose.model('Cat', { name: String });
+
+let kitty = new Cat({ name: 'Zildjian1' });
+kitty.save(function(err) {
+    if (err) // ...
+        console.log('meow');
+});
 module.exports = app;
